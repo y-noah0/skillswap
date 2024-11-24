@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&display=swap');
+
+.Hero{
+    padding: 10px 80px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: baseline;
+    align-items: center;
+    height: 600px;
+}
+.Hero h1 {
+    font-family: "DM Serif Display", serif;
+    font-size: 48px;
+    font-weight: 300;
+    text-align: center;
+    margin-top: 70px;
+}
+.Hero p{
+    font-family: "DM Sans", sans-serif;
+    font-size: 14px;
+    text-align: center;
+}
+.Hero button{
+    background-color:#ffffff ;
+    color: var(--color-blue);
+    border: none;
+    cursor: pointer;
+    height: 40px;
+    width: 100px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin-top: 30px;
+}

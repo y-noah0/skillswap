@@ -1,0 +1,36 @@
+.Navigation{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 80px;
+    align-items: center;
+}
+.logo{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.logo h2{
+    color: var(--color-blue);
+}
+.logo img{
+    height:30px;
+    width: auto;
+}
+.buttons{
+    display: flex;
+    gap: 20px;
+}
+.signUp, .signIn{
+    background-color: var(--color-blue);
+    color: #EBFAF8;
+    border: none;
+    cursor: pointer;
+    height: 40px;
+    width: 100px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+.signIn{
+    background: transparent;
+    color: var(--color-blue);
+}
