@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const authRoutes = require('./routes/auth')
+const SkillRoutes = require('./routes/SkillRoutes')
 const ChatRoutes = require('./routes/ChatRoutes')
 const userRoutes = require('./routes/userRoutes')
 const MessageRoutes = require('./routes/MessageRoutes')
@@ -26,4 +27,5 @@ app.use(cors())
 app.use('/user',authRoutes);
 app.use('/chat',ChatRoutes);
 app.use('/message', MessageRoutes);
+app.use('/skill',SkillRoutes)
 app.use(userRoutes)
