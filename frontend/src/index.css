@@ -4,7 +4,7 @@
   --color-blue: #1D3557;
 }
 
-body {
+* {
   margin: 0px;
   font-family: "DM Sans", serif;
 }

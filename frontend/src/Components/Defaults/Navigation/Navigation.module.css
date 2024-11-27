@@ -1,9 +1,9 @@
 .Navigation{
     display: flex;
     justify-content: space-between;
-    padding: 10px 80px;
+    padding: 20px 80px;
     align-items: center;
-    background-color: #EBFAF8 !important;
+    background-color: transparent;
 }
 .logo{
     display: flex;

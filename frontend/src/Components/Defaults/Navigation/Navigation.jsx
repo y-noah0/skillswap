@@ -16,13 +16,13 @@ function Navigation() {
                     className={style.signIn}
                     onClick={() => navigate('/login')}
                 >
-                    Sign In
+                    Sign in
                 </button>
                 <button 
                     className={style.signUp}
                     onClick={() => navigate('/signup')}
                 >
-                    Sign Up
+                    Sign up
                 </button>
             </div>
         </div>

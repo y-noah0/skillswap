@@ -9,7 +9,6 @@ import Features from "./pages/Features/Features";
 function App() {
   return (
     <>
-      <Navigation />
       <Routes>
         <Route
           path="/"
