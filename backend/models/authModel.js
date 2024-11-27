@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
-const skillModel = require("./Skills")
+const skillModel = require("./SkillModel");
 const authSchema = new Schema({
   username: {
     type: String,
@@ -31,12 +31,19 @@ const authSchema = new Schema({
   desired_skill: {
     type: String,
     required: [true, "the desired skill field is required"],
-  }
+  },
 });
 
 authSchema.statics.signup = async function (body) {
-  const { username, first_name, last_name, email, password,skill,desired_skill } =
-    body;
+  const {
+    username,
+    first_name,
+    last_name,
+    email,
+    password,
+    skill,
+    desired_skill,
+  } = body;
   const username_exists = await this.find({ username });
   const email_exists = await this.find({ username });
 
@@ -57,7 +64,7 @@ authSchema.statics.signup = async function (body) {
     skill,
     desired_skill,
   });
-  const skills = skillModel.create({skill_name: skill});
+  const skills = skillModel.create({ skill_name: skill });
   return user;
 };
 authSchema.statics.login = async function (email, password) {

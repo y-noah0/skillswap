@@ -9,15 +9,19 @@ const createRoom = async (req, res) => {
             newArray.push(skillId)
             const updateRoom = await RoomModel.findOneAndUpdate({
               skillId: skillId,
-            },{members:newArray});
-        }
-    const newRoom = new RoomModel({
-      skillId,
-    members: [senderId],
-  });
-
-    const result = await newRoom.save();
-    res.status(200).json(result);
+            }, { members: newArray });
+          updateRoom.save();
+          res.status(200).json(updateRoom);
+      }
+        else {
+          
+          const newRoom = new RoomModel({
+            skillId,
+          members: [senderId],
+        });
+            newRoom.save();
+      }
+      res.status(200).json(newRoom);
   } catch (error) {
     res.status(500).json(error);
   }
