@@ -9,8 +9,7 @@ function App() {
     
   const { user } = useContext(AuthContext);
   return (
-    <>
-      <Navigation />
+    <Router>
       <Routes>
         <Route 
          path="/" 
