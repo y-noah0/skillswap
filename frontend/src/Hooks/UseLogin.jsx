@@ -3,8 +3,6 @@ import { AuthContext } from "../context/AuthContext";
 import { useState } from "react";
 
 
-
-
 export const UseLogin = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(null);
