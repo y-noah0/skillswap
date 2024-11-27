@@ -1,29 +1,30 @@
-import { Routes, Route } from "react-router-dom";
-import Navigation from "./Components/Defaults/Navigation/Navigation";
-import Hero from "./Components/Hero/Hero";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Components/Auth/Login/Login";
 import SignUp from "./Components/Auth/signUp/SignUp";
-import "./App.css";
-import Features from "./pages/Features/Features";
+import Home from "./pages/Home/Home";
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
 
 function App() {
+    
+  const { user } = useContext(AuthContext);
   return (
-    <>
-      <Navigation />
+    <Router>
       <Routes>
+        <Route 
+         path="/" 
+         element={user ? <Home /> : <Navigate to="/login" />} 
+         />
         <Route
-          path="/"
-          element={
-            <div className="top">
-              <Hero />
-              <Features />
-            </div>
-          }
+          path="/login"
+          element={!user ? <Login /> : <Navigate to="/" />}
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route
+          path="/signup"
+          element={!user ? <SignUp /> : <Navigate to="/" />}
+        />
       </Routes>
-    </>
+    </Router>
   );
 }
 

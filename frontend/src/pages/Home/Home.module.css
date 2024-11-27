@@ -1,0 +1,9 @@
+.top {
+    background-color: #EBFAF8 !important;
+    background: url('../../assets/images/bg.png');
+    background-size: cover;
+}
+.authenticatedContainer {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
