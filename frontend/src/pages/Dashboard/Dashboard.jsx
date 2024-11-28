@@ -29,7 +29,14 @@ const Dashboard = () => {
       sender_id: "6sif7",
       sender_name: "Enock",
       content: "I'm flight",
-      Image: `${messageImage}`
+      Image: `${messageImage}`,
+    },
+    {
+      message_id: 4,
+      sender_id: "6sdf7",
+      sender_name: "kazovu",
+      content: "Babby hayaa🙆😭😭",
+      // Image: `${messageImage}`
     },
   ];
 
@@ -45,30 +52,40 @@ const Dashboard = () => {
 
         <div className={styles.contentArea}>
           <div className={styles.chatArea}>
-            <div className={styles.welcomeMessage}>
-              <img src={welcomeIcon} className={styles.welcomeIcon} />
-              <h2>Welcome to Mathematics Hub</h2>
-            </div>
-            <div className={styles.messages}>
-              {messages.map((message) => (
-                <div
-                  key={message.message_id}
-                  className={
-                    message.sender_id === sender_id
-                      ? styles.myMessage
-                      : styles.theirMessage
-                  }
-                >
-                  <div className={styles.messageSender}>
-                    <span>{message.sender_name}</span>
+            <div className={styles.messageBox}>
+              <div
+                className={styles.welcomeMessage}
+                style={
+                  messages.length == 0 ? { display: "flex", flexDirection: "column" } : { display: "none" }
+                }
+              >
+                <img src={welcomeIcon} className={styles.welcomeIcon} />
+                <h2>Welcome to Mathematics Hub</h2>
+              </div>
+              <div className={styles.messages}>
+                {messages.map((message) => (
+                  <div
+                    key={message.message_id}
+                    className={
+                      message.sender_id === sender_id
+                        ? styles.myMessage
+                        : styles.theirMessage
+                    }
+                  >
+                    <div className={styles.messageSender}>
+                      <span>{message.sender_name}</span>
+                    </div>
+                    <div className={styles.messageContent}>
+                      {message.content}
+                    </div>
+                    <div className={styles.messageImage}>
+                      {message.Image && <img src={message.Image} />}
+                    </div>
                   </div>
-                  <div className={styles.messageContent}>{message.content}</div>
-                  <div className={styles.messageImage}>
-                    {message.Image && <img src={message.Image} />}  
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
             <div className={styles.messageInput}>
               <input type="text" placeholder="Say something..." />
               <div className={styles.boxButtons}>
