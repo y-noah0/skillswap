@@ -1,44 +1,57 @@
+import React, { useState, useEffect, useContext } from "react";
 import Sidebar from "../Sidebar/Sidebar";
 import styles from "./Dashboard.module.css";
 import welcomeIcon from "../../assets/images/Welcome.png";
-import messageImage from "../../assets/sampleMessageImage.jpg";
+import { AuthContext } from "../../context/AuthContext";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:8800");
 
 const Dashboard = () => {
-  const members = [
-    { id: 1, name: "Chiomilol" },
-    { id: 2, name: "Arsene" },
-    { id: 3, name: "Noah101" },
-    { id: 4, name: "Enock360" },
-  ];
-  const sender_id = "32befj";
-  const messages = [
-    {
-      message_id: 1,
-      sender_id: "32befj",
-      sender_name: "Arsene",
-      content: "Hello",
-    },
-    {
-      message_id: 2,
-      sender_id: "32fwr",
-      sender_name: "Chlomi",
-      content: "Hyy",
-    },
-    {
-      message_id: 3,
-      sender_id: "6sif7",
-      sender_name: "Enock",
-      content: "I'm flight",
-      Image: `${messageImage}`,
-    },
-    {
-      message_id: 4,
-      sender_id: "6sdf7",
-      sender_name: "kazovu",
-      content: "Babby hayaa🙆😭😭",
-      // Image: `${messageImage}`
-    },
-  ];
+    const members = [
+      { id: 1, name: "Chiomilol" },
+      { id: 2, name: "Arsene" },
+      { id: 3, name: "Noah101" },
+      { id: 4, name: "Enock360" },
+    ];
+
+  const { user } = useContext(AuthContext);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const roomId = "6748cc78d8f6b8b11e6eeada"; // Replace with actual roomId
+
+  useEffect(() => {
+    socket.emit("join_room", roomId);
+
+    socket.on("receive_message", (message) => {
+      setMessages((prevMessages) => [message, ...prevMessages]);
+    });
+
+    return () => {
+      socket.off("receive_message");
+    };
+  }, [roomId]);
+
+  const handleSendMessage = async () => {
+    const messageData = {
+      roomId,
+      senderId: user._id,
+      message: newMessage,
+    };
+
+    socket.emit("send_message", messageData);
+
+    // Save message to the database
+    await fetch("http://localhost:3000/room/message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(messageData),
+    }).catch((error) => console.error(error));
+
+    setNewMessage("");
+  };
 
   return (
     <div className={styles.dashboardContainer}>
@@ -56,7 +69,9 @@ const Dashboard = () => {
               <div
                 className={styles.welcomeMessage}
                 style={
-                  messages.length == 0 ? { display: "flex", flexDirection: "column" } : { display: "none" }
+                  messages.length === 0
+                    ? { display: "flex", flexDirection: "column" }
+                    : { display: "none" }
                 }
               >
                 <img src={welcomeIcon} className={styles.welcomeIcon} />
@@ -65,9 +80,9 @@ const Dashboard = () => {
               <div className={styles.messages}>
                 {messages.map((message) => (
                   <div
-                    key={message.message_id}
+                    key={message._id}
                     className={
-                      message.sender_id === sender_id
+                      message.senderId === user._id
                         ? styles.myMessage
                         : styles.theirMessage
                     }
@@ -75,24 +90,24 @@ const Dashboard = () => {
                     <div className={styles.messageSender}>
                       <span>{message.sender_name}</span>
                     </div>
-                    <div className={styles.messageContent}>
-                      {message.content}
-                    </div>
-                    <div className={styles.messageImage}>
-                      {message.Image && <img src={message.Image} />}
-                    </div>
+                    <div className={styles.messageContent}>{message.text}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className={styles.messageInput}>
-              <input type="text" placeholder="Say something..." />
+              <input
+                type="text"
+                placeholder="Say something..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+              />
               <div className={styles.boxButtons}>
-                <button className={styles.sendButton}>
-                  <span className={styles.sendIcon}>📎</span>
-                </button>
-                <button className={styles.sendButton}>
+                <button
+                  className={styles.sendButton}
+                  onClick={handleSendMessage}
+                >
                   <span className={styles.sendIcon}>➤</span>
                 </button>
               </div>

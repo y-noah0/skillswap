@@ -89,7 +89,7 @@ const SignUp = () => {
                 <label>Skill:</label>
                 <select onChange={(e) => setSkill(e.target.value)} value={skill}>
                   <option value="">Select your skill</option>
-                  <option value="programming">Programming</option>
+                  <option value="programming">hy</option>
                   <option value="design">Design</option>
                   <option value="marketing">Marketing</option>
                   <option value="writing">Writing</option>

@@ -6,6 +6,9 @@ const RoomSchema = new Schema({
     },
     users: {
         type: Array
+    },
+    messages: {
+        type: Array
     }
 }, { timestamps: true })
 

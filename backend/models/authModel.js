@@ -1,86 +1,122 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const Schema = mongoose.Schema;
+const mongoose = require("mongoose");
 const skillModel = require("./SkillModel");
-const authSchema = new Schema({
+const RoomModel = require("./RoomModel"); // Import RoomModel
+
+const authSchema = new mongoose.Schema({
+  // Define your schema here
   username: {
     type: String,
-    required: [true, "the username field is required"],
+    required: [true, "Please enter a username"],
   },
   first_name: {
     type: String,
-    required: [true, "the first_name field is required"],
+    required: [true, "Please enter your first name"],
   },
   last_name: {
     type: String,
-    required: [true, "the last_name field is required"],
+    required: [true, "Please enter your last name"],
   },
   email: {
     type: String,
-    required: [true, "the email field is required"],
+    required: [true, "Please enter an email"],
   },
   password: {
     type: String,
-    required: [true, "the password field is required"],
-    minlength: [6, "password must be 6 charcters at minmum"],
+    required: [true, "Please enter a password"],
   },
   skill: {
     type: String,
-    required: [true, "the skill field is required"],
+    required: [true, "Please enter a skill"],
   },
   desired_skill: {
     type: String,
-    required: [true, "the desired skill field is required"],
+    required: [true, "Please enter a desired skill"],
   },
+
 });
 
-authSchema.statics.signup = async function (body) {
-  const {
-    username,
-    first_name,
-    last_name,
-    email,
-    password,
-    skill,
-    desired_skill,
-  } = body;
-  const username_exists = await this.find({ username });
-  const email_exists = await this.find({ username });
+// User registration method
+authSchema.statics.signup = async function (
+  username,
+  first_name,
+  last_name,
+  email,
+  password,
+  skill,
+  desired_skill
+){
+
+console.log(  username,first_name,  last_name,  email,  password,username_exists = await this.find({ username }));
+  const email_exists = await this.find({ email });
 
   console.log(username_exists.length, email_exists.length);
 
   if (username_exists.length != 0 || email_exists.length != 0) {
-    throw Error("username or email is arleady in use");
+    throw Error("username or email is already in use");
   }
-  const salt = await bcrypt.genSalt();
-  const hash = await bcrypt.hash(password, salt);
+try {
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(password, salt);
 
-  const user = this.create({
-    username,
-    first_name,
-    last_name,
-    email,
-    password: hash,
-    skill,
-    desired_skill,
-  });
-  const skills = skillModel.create({ skill_name: skill });
-  return user;
+    const user = await this.create({
+      username,
+      first_name,
+      last_name,
+      email,
+      password: hash,
+      skill,
+      desired_skill,
+    });
+
+    // Create skills if they do not exist
+    await skillModel.findOneAndUpdate(
+      { skill_name: skill },
+      { skill_name: skill },
+      { upsert: true, new: true }
+    );
+
+    await skillModel.findOneAndUpdate(
+      { skill_name: desired_skill },
+      { skill_name: desired_skill },
+      { upsert: true, new: true }
+    );
+
+    // Create rooms for the skills if they do not exist
+    await RoomModel.findOneAndUpdate(
+      { skill_id: skill },
+      { skill_id: skill, $addToSet: { members: user._id } },
+      { upsert: true, new: true }
+    );
+
+  await RoomModel.findOneAndUpdate(  
+      { skill_id: desired_skill },
+      { skill_id: desired_skill, $addToSet: { members: user._id } },
+      { upsert: true, new: true }
+    );
+
+    return user;
+} catch (error) {
+  console.log(error);
+  
+}
 };
+
+// User login method
 authSchema.statics.login = async function (email, password) {
   const email_exists = await this.find({ email });
   if (email_exists.length == 0) {
-    throw Error("wrong Email ");
+    throw Error("wrong Email");
   } else {
-    user = email_exists[0];
-    password = bcrypt.compare(password, user.password);
-    if (password) {
+    const user = email_exists[0];
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (passwordMatch) {
       return user;
     } else {
-      throw Error("wrong  password");
+      throw Error("wrong password");
     }
   }
 };
 
-const authModel = mongoose.model("User", authSchema);
-module.exports = authModel;
+const User = mongoose.model("User", authSchema);
+module.exports = User;
