@@ -91,3 +91,8 @@
 
     width: 70%;
   }
+.error{
+    color: red;
+    font-size: 0.875rem;
+    
+}
