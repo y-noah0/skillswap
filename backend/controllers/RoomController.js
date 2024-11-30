@@ -1,4 +1,5 @@
 const RoomModel = require("../models/RoomModel");
+const User = require('../models/authModel')
 const { create } = require("../models/SkillModel");
 
 const createRoom = async (req, res) => {
@@ -43,7 +44,15 @@ const getMessages = async (req, res) => {
   try {
     const room = await RoomModel.findById(roomId);
     if (room) {
-      res.status(200).json(room.messages);
+      const messages = [];
+      
+      for (const message of room.messages) {
+        const user = await User.findById(message.senderId);
+        message["sender_name"] = user.username;
+        messages.unshift(message);
+      }
+      
+      res.status(200).json(messages);
     } else {
       res.status(404).json({ message: "Room not found" });
     }

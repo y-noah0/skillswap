@@ -18,13 +18,15 @@ const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const roomId = "6748cc78d8f6b8b11e6eeada"; // Replace with actual roomId
+  const roomId = "6748d5e93f43da41a7ac7f5a"; // Replace with actual roomId
 
   useEffect(() => {
     socket.emit("join_room", roomId);
-
     socket.on("receive_message", (message) => {
-      setMessages((prevMessages) => [message, ...prevMessages]);
+      console.log('thisis the id of it : '+messages.indexOf(message));
+        setMessages((prevMessages) => [message, ...prevMessages]);
+        
+      
     });
 
     return () => {
@@ -36,8 +38,10 @@ const Dashboard = () => {
     const messageData = {
       roomId,
       senderId: user._id,
+      sender_name: user.username,
       message: newMessage,
     };
+
 
     socket.emit("send_message", messageData);
 
@@ -52,6 +56,25 @@ const Dashboard = () => {
 
     setNewMessage("");
   };
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const result = await fetch("http://localhost:3000/room/messages/"+roomId);
+      const messages = await result.json();
+      setMessages((prevMessages) => {
+        const newMessages = messages.filter(
+          (message) => !prevMessages.some((msg) => msg._id === message._id)
+        );
+        return [...newMessages, ...prevMessages];
+      });
+    };
+
+    fetchMessages();
+
+
+  }, [roomId]);
+console.log(messages);
+
 
   return (
     <div className={styles.dashboardContainer}>
@@ -80,7 +103,7 @@ const Dashboard = () => {
               <div className={styles.messages}>
                 {messages.map((message) => (
                   <div
-                    key={message._id}
+                    key={message}
                     className={
                       message.senderId === user._id
                         ? styles.myMessage
@@ -90,7 +113,9 @@ const Dashboard = () => {
                     <div className={styles.messageSender}>
                       <span>{message.sender_name}</span>
                     </div>
-                    <div className={styles.messageContent}>{message.text}</div>
+                    <div className={styles.messageContent}>
+                      {message.message}
+                    </div>
                   </div>
                 ))}
               </div>
