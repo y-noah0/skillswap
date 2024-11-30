@@ -9,7 +9,7 @@ const Login = () => {
   const {login, error, isLoading} = UseLogin()
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     await login(email, password)
   }
@@ -42,7 +42,7 @@ const Login = () => {
                 />
               </div>
               <button type="submit" disabled={isLoading}>Sign In</button>
-              {error && <div className="error">{error}</div>}
+              {error && <div className={styles.error}>{error}</div>}
             </form>
           </div>
         </div>

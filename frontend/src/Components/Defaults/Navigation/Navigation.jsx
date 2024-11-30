@@ -9,7 +9,8 @@ function Navigation() {
     const navigate = useNavigate();
     const { logout } = UseLogout();
     const { user } = useContext(AuthContext);
-  
+
+  console.log(user)
     const handleClick = () => {
         logout();
     }
