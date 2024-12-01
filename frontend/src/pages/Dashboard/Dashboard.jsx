@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext,useRef } from "react";
 import Sidebar from "../Sidebar/Sidebar";
 import styles from "./Dashboard.module.css";
 import welcomeIcon from "../../assets/images/Welcome.png";
@@ -8,6 +8,10 @@ import io from "socket.io-client";
 const socket = io("http://localhost:8800");
 
 const Dashboard = () => {
+    const messagesEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
     const members = [
       { id: 1, name: "Chiomilol" },
       { id: 2, name: "Arsene" },
@@ -20,19 +24,20 @@ const Dashboard = () => {
   const [newMessage, setNewMessage] = useState("");
   const roomId = "6748d5e93f43da41a7ac7f5a"; // Replace with actual roomId
 
-  useEffect(() => {
-    socket.emit("join_room", roomId);
-    socket.on("receive_message", (message) => {
-      console.log('thisis the id of it : '+messages.indexOf(message));
-        setMessages((prevMessages) => [message, ...prevMessages]);
-        
-      
-    });
+useEffect(() => {
+  socket.emit("join_room", roomId);
+  socket.on("receive_message", (message) => {
+    setMessages((prevMessages) => [message, ...prevMessages]);
+  });
 
-    return () => {
-      socket.off("receive_message");
-    };
-  }, [roomId]);
+  return () => {
+    socket.off("receive_message");
+  };
+}, [roomId]);
+
+useEffect(() => {
+  scrollToBottom(); // Scroll to bottom whenever messages are updated
+}, [messages]);
 
   const handleSendMessage = async () => {
     const messageData = {
@@ -103,7 +108,7 @@ console.log(messages);
               <div className={styles.messages}>
                 {messages.map((message) => (
                   <div
-                    key={message}
+                    key={message._id} // Use a unique identifier like _id
                     className={
                       message.senderId === user._id
                         ? styles.myMessage
@@ -118,7 +123,9 @@ console.log(messages);
                     </div>
                   </div>
                 ))}
+                {/* Ensure this is outside the loop */}
               </div>
+              <div ref={messagesEndRef} />{" "} 
             </div>
 
             <div className={styles.messageInput}>

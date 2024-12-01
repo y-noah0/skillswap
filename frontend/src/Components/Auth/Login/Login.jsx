@@ -1,16 +1,19 @@
-import React, { useState } from "react";
 import styles from "./Login.module.css";
 import logo from "../../../assets/images/logo.png";
 import { UseLogin } from "../../../Hooks/UseLogin";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../../context/AuthContext";
+
 
 const Login = () => {
+    const { user } = useContext(AuthContext);
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const {login, error, isLoading} = UseLogin()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     await login(email, password)
   }
   return (
@@ -23,6 +26,7 @@ const Login = () => {
           </div>
           <div className={styles.form}>
             <form onSubmit={handleSubmit}>
+            {user === undefined && <div className={styles.error}>check you details and try again</div>}
               <div className={styles.inputGroup}>
                 <label>Email:</label>
                 <input 

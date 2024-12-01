@@ -32,7 +32,7 @@ if (response.ok) {
     } catch (err) {
       // Handle unexpected errors
       console.error('Login error:', err);
-      setError('An unexpected error occurred');
+      setError(err.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
