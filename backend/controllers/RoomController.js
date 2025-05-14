@@ -1,30 +1,27 @@
 const RoomModel = require("../models/RoomModel");
-const User = require('../models/authModel')
-const { create } = require("../models/SkillModel");
+const User = require('../models/authModel');
 
 const createRoom = async (req, res) => {
-  const { skillId, senderId } = req.body;
+  const { skillId, userId, username } = req.body;
   try {
-    const roomExists = await RoomModel.find({ skillId: skillId });
-    if (roomExists) {
-      const newArray = roomExists.members;
-      newArray.push(skillId);
-      const updateRoom = await RoomModel.findOneAndUpdate(
-        {
-          skillId: skillId,
-        },
-        { members: newArray }
-      );
-      updateRoom.save();
-      res.status(200).json(updateRoom);
-    } else {
-      const newRoom = new RoomModel({
-        skillId,
-        members: [senderId],
+    let room = await RoomModel.findOne({ skill_id: skillId });
+    
+    if (!room) {
+      room = new RoomModel({
+        skill_id: skillId,
+        members: [{ userId, username }],
+        messages: []
       });
-      newRoom.save();
+    } else {
+      // Add member if not already in the room
+      const memberExists = room.members.some(member => member.userId === userId);
+      if (!memberExists) {
+        room.members.push({ userId, username });
+      }
     }
-    res.status(200).json(newRoom);
+    
+    await room.save();
+    res.status(200).json(room);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -42,17 +39,9 @@ const getRooms = async (req, res) => {
 const getMessages = async (req, res) => {
   const { roomId } = req.params;
   try {
-    const room = await RoomModel.findById(roomId);
+    const room = await RoomModel.findOne({ skill_id: roomId });
     if (room) {
-      const messages = [];
-      
-      for (const message of room.messages) {
-        const user = await User.findById(message.senderId);
-        message["sender_name"] = user.username;
-        messages.unshift(message);
-      }
-      
-      res.status(200).json(messages);
+      res.status(200).json(room.messages);
     } else {
       res.status(404).json({ message: "Room not found" });
     }
@@ -62,14 +51,16 @@ const getMessages = async (req, res) => {
 };
 
 const saveMessage = async (req, res) => {
-
-  const { roomId, senderId, message } = req.body;
-  console.log(roomId, senderId, message);
+  const { roomId, senderId, sender_name, message } = req.body;
   
   try {
-    const room = await RoomModel.findById(roomId);
+    const room = await RoomModel.findOne({ skill_id: roomId });
     if (room) {
-      room.messages.push({ senderId, message });
+      room.messages.push({
+        senderId,
+        sender_name,
+        message
+      });
       await room.save();
       res.status(200).json(room);
     } else {
@@ -80,4 +71,75 @@ const saveMessage = async (req, res) => {
   }
 };
 
-module.exports = { createRoom, getRooms, saveMessage, getMessages };
+const getRoomMembers = async (req, res) => {
+  const { roomId } = req.params;
+  try {
+    const room = await RoomModel.findOne({ skill_id: roomId });
+    if (room) {
+      res.status(200).json(room.members);
+    } else {
+      res.status(404).json({ message: "Room not found" });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+const editMessage = async (req, res) => {
+  const { roomId, messageId, newMessage } = req.body;
+  
+  try {
+    const room = await RoomModel.findOne({ skill_id: roomId });
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    const message = room.messages.id(messageId);
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    message.message = newMessage;
+    message.isEdited = true;
+    message.editedAt = new Date();
+    
+    await room.save();
+    res.status(200).json(message);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+const deleteMessage = async (req, res) => {
+  const { roomId, messageId } = req.body;
+  
+  try {
+    const room = await RoomModel.findOne({ skill_id: roomId });
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    const message = room.messages.id(messageId);
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    message.isDeleted = true;
+    message.message = "This message was deleted";
+    
+    await room.save();
+    res.status(200).json(message);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+module.exports = { 
+  createRoom, 
+  getRooms, 
+  saveMessage, 
+  getMessages,
+  getRoomMembers,
+  editMessage,
+  deleteMessage
+};

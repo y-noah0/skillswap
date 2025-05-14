@@ -93,6 +93,15 @@
   color: #f0f0f0;
   font-weight: 300;
   font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.messageText {
+  flex-grow: 1;
+  margin-right: 8px;
 }
 
 .messageSender {
@@ -164,4 +173,43 @@
   border: none;
   color: #2ea384;
   cursor: pointer;
+}
+
+.editedBadge {
+  font-size: 0.8em;
+  color: #666;
+  margin-left: 5px;
+}
+
+.messageActions {
+  display: none; /* Hide by default */
+  gap: 8px;
+  align-items: center; /* Vertically align icons if their heights differ */
+}
+
+/* Add this rule to show actions on hover of the user's own message */
+.myMessage:hover .messageActions {
+  display: flex;
+}
+
+.editContainer {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  border-radius: 4px;
+}
+
+/* Modify existing .messageActions button styles or replace them */
+.messageActions button {
+  background: none; /* Remove background */
+  border: none; /* Remove border */
+  color: #a0a0a0; /* Icon color */
+  padding: 2px 4px; /* Adjust padding as needed */
+  font-size: 1.1em; /* Adjust icon size */
+  cursor: pointer;
+  line-height: 1; /* Helps with vertical alignment of text-based icons */
+}
+
+.messageActions button:hover {
+  color: #ffffff; /* Icon color on hover */
 }

@@ -46,7 +46,9 @@ const Login = () => {
                 />
               </div>
               <button type="submit" disabled={isLoading}>Sign In</button>
+              <div><a href="/signup">Don t have an account? Sign Up</a></div>
               {error && <div className={styles.error}>{error}</div>}
+
             </form>
           </div>
         </div>

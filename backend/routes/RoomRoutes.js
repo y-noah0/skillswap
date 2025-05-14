@@ -4,6 +4,9 @@ const {
   getRooms,
   saveMessage,
   getMessages,
+  getRoomMembers,
+  editMessage,
+  deleteMessage
 } = require("../controllers/RoomController");
 
 const router = express.Router();
@@ -19,5 +22,14 @@ router.post("/message", saveMessage);
 
 // Route to get all messages in a room
 router.get("/messages/:roomId", getMessages);
+
+// Route to get room members
+router.get("/members/:roomId", getRoomMembers);
+
+// Route to edit a message
+router.put("/message/edit", editMessage);
+
+// Route to delete a message
+router.delete("/message/delete", deleteMessage);
 
 module.exports = router;
